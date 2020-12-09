@@ -1,0 +1,674 @@
+[
+    {
+        "id": "238dca10.02b2b6",
+        "type": "subflow",
+        "name": "Beschattung",
+        "info": "",
+        "category": "",
+        "in": [
+            {
+                "x": 80,
+                "y": 180,
+                "wires": [
+                    {
+                        "id": "c49bbd67.885b"
+                    }
+                ]
+            }
+        ],
+        "out": [
+            {
+                "x": 1920,
+                "y": 800,
+                "wires": [
+                    {
+                        "id": "3056b376.48edbc",
+                        "port": 0
+                    }
+                ]
+            },
+            {
+                "x": 1440,
+                "y": 820,
+                "wires": [
+                    {
+                        "id": "af049009.a16ee",
+                        "port": 0
+                    }
+                ]
+            }
+        ],
+        "env": [],
+        "color": "#DDAA99"
+    },
+    {
+        "id": "3056b376.48edbc",
+        "type": "change",
+        "z": "238dca10.02b2b6",
+        "name": "payload = Beschattung.Level",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "Beschattung.Level",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 2000,
+        "y": 700,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "c49bbd67.885b",
+        "type": "function",
+        "z": "238dca10.02b2b6",
+        "name": "Beschattung_SetValues",
+        "func": "let c = msg.sun\nmsg.Beschattung.Azimuth = Number(c.azimuth.toFixed(1));\nmsg.Beschattung.Altitude = Number(c.altitude.toFixed(1));\nmsg.Beschattung.Level = Number(msg.Beschattung.Level);\nmsg.Beschattung.DailyMaxTemp = global.get('dailymaxtemp');\nmsg.Beschattung.RainProtection = global.get('RainProtection');\nmsg.Beschattung.SunProtection = global.get('SunProtection');\nmsg.Beschattung.WeatherCondition = global.get('WeatherCondition');\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 270,
+        "y": 180,
+        "wires": [
+            [
+                "112bb28b.d1ff8d"
+            ]
+        ]
+    },
+    {
+        "id": "ffccc5a2.ce7b48",
+        "type": "function",
+        "z": "238dca10.02b2b6",
+        "name": "SetFinalValues",
+        "func": "\nmsg.Beschattung.Percentage = Number(((1 - msg.Beschattung.Level) *100).toFixed(1));\nmsg.Beschattung.ImageURL = 'http://openweathermap.org/img/wn/' + global.get('openweather.current.weather[0].icon') + \"@2x.png\";\nmsg.payload = msg.Beschattung.Protection;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 2140,
+        "y": 500,
+        "wires": [
+            [
+                "af049009.a16ee"
+            ]
+        ]
+    },
+    {
+        "id": "1eb400c4.aedd0f",
+        "type": "rbe",
+        "z": "238dca10.02b2b6",
+        "name": "",
+        "func": "rbei",
+        "gap": "",
+        "start": "",
+        "inout": "out",
+        "property": "Beschattung.Protection",
+        "x": 1470,
+        "y": 700,
+        "wires": [
+            [
+                "73bb07a6.76d728"
+            ]
+        ]
+    },
+    {
+        "id": "19afff6e.ed3631",
+        "type": "switch",
+        "z": "238dca10.02b2b6",
+        "name": "Tageshöchsttemperatur",
+        "property": "dailymaxtemp",
+        "propertyType": "global",
+        "rules": [
+            {
+                "t": "lte",
+                "v": "15",
+                "vt": "str"
+            },
+            {
+                "t": "lt",
+                "v": "20",
+                "vt": "str"
+            },
+            {
+                "t": "lt",
+                "v": "24",
+                "vt": "str"
+            },
+            {
+                "t": "lt",
+                "v": "30",
+                "vt": "str"
+            },
+            {
+                "t": "gte",
+                "v": "30",
+                "vt": "str"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 5,
+        "x": 890,
+        "y": 420,
+        "wires": [
+            [
+                "27699aa3.f1c626"
+            ],
+            [
+                "65f25e5f.27f79"
+            ],
+            [
+                "9d4f078a.a35528"
+            ],
+            [
+                "304a7578.3b7b1a"
+            ],
+            [
+                "126fdcc.3e36b23"
+            ]
+        ]
+    },
+    {
+        "id": "304a7578.3b7b1a",
+        "type": "change",
+        "z": "238dca10.02b2b6",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "Beschattung.Level",
+                "pt": "msg",
+                "to": "0.2",
+                "tot": "num"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1180,
+        "y": 460,
+        "wires": [
+            [
+                "82baa30c.5791d"
+            ]
+        ]
+    },
+    {
+        "id": "1c276bcd.62d574",
+        "type": "comment",
+        "z": "238dca10.02b2b6",
+        "name": "0 = geschlossen | 1 = geöffnet",
+        "info": "0 = geschlossen\n1 = geöffnet",
+        "x": 1180,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "126fdcc.3e36b23",
+        "type": "change",
+        "z": "238dca10.02b2b6",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "Beschattung.Level",
+                "pt": "msg",
+                "to": "0",
+                "tot": "num"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1180,
+        "y": 500,
+        "wires": [
+            [
+                "82baa30c.5791d"
+            ]
+        ]
+    },
+    {
+        "id": "9d4f078a.a35528",
+        "type": "change",
+        "z": "238dca10.02b2b6",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "Beschattung.Level",
+                "pt": "msg",
+                "to": "0.6",
+                "tot": "num"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1180,
+        "y": 420,
+        "wires": [
+            [
+                "82baa30c.5791d"
+            ]
+        ]
+    },
+    {
+        "id": "65f25e5f.27f79",
+        "type": "change",
+        "z": "238dca10.02b2b6",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "Beschattung.Level",
+                "pt": "msg",
+                "to": "0.8",
+                "tot": "num"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1180,
+        "y": 380,
+        "wires": [
+            [
+                "82baa30c.5791d"
+            ]
+        ]
+    },
+    {
+        "id": "27699aa3.f1c626",
+        "type": "change",
+        "z": "238dca10.02b2b6",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "Beschattung.Level",
+                "pt": "msg",
+                "to": "1",
+                "tot": "num"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1180,
+        "y": 340,
+        "wires": [
+            [
+                "82baa30c.5791d"
+            ]
+        ]
+    },
+    {
+        "id": "af049009.a16ee",
+        "type": "template",
+        "z": "238dca10.02b2b6",
+        "name": "INFO",
+        "field": "Beschattung.Info",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "🌞 *Schutz für {{topic}}: {{Beschattung.Protection}}*\nRollladen-Sollwert: {{Beschattung.Percentage}}%\nStatus: {{Beschattung.Status}}\nWetter: {{Beschattung.WeatherCondition}} / {{Beschattung.DailyMaxTemp}}°C\nAzimuth: {{Beschattung.Azimuth}} / {{Beschattung.AzimuthWindow}} \nAltitude: {{Beschattung.Altitude}}",
+        "output": "str",
+        "x": 1310,
+        "y": 700,
+        "wires": [
+            [
+                "1eb400c4.aedd0f"
+            ]
+        ]
+    },
+    {
+        "id": "73bb07a6.76d728",
+        "type": "within-time-switch",
+        "z": "238dca10.02b2b6",
+        "name": "",
+        "positionConfig": "d836509a.67bc4",
+        "startTime": "sunriseEnd",
+        "startTimeType": "pdsTime",
+        "startOffset": 0,
+        "startOffsetType": "none",
+        "startOffsetMultiplier": 60000,
+        "endTime": "sunset",
+        "endTimeType": "pdsTime",
+        "endOffset": 0,
+        "endOffsetType": "none",
+        "endOffsetMultiplier": 60000,
+        "timeDays": "*",
+        "timeOnlyOddDays": false,
+        "timeOnlyEvenDays": false,
+        "timeMonths": "*",
+        "timedatestart": "",
+        "timedateend": "",
+        "propertyStart": "",
+        "propertyStartType": "none",
+        "propertyStartCompare": "true",
+        "propertyStartThreshold": "",
+        "propertyStartThresholdType": "num",
+        "startTimeAlt": "",
+        "startTimeAltType": "entered",
+        "startOffsetAlt": 0,
+        "startOffsetAltType": "none",
+        "startOffsetAltMultiplier": 60000,
+        "propertyEnd": "",
+        "propertyEndType": "none",
+        "propertyEndCompare": "true",
+        "propertyEndThreshold": "",
+        "propertyEndThresholdType": "num",
+        "endTimeAlt": "",
+        "endTimeAltType": "entered",
+        "endOffsetAlt": 0,
+        "endOffsetAltType": "none",
+        "endOffsetAltMultiplier": 60000,
+        "tsCompare": "0",
+        "x": 1700,
+        "y": 700,
+        "wires": [
+            [
+                "3056b376.48edbc"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "112bb28b.d1ff8d",
+        "type": "switch",
+        "z": "238dca10.02b2b6",
+        "name": "Hausseite",
+        "property": "topic",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "Ostseite",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "Südseite",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "Westseite",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "Nordseite",
+                "vt": "str"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 4,
+        "x": 200,
+        "y": 420,
+        "wires": [
+            [
+                "b0ee3967.d11488"
+            ],
+            [
+                "e158912a.7588c"
+            ],
+            [
+                "ff963db0.5195e"
+            ],
+            [
+                "bd5be89c.151818"
+            ]
+        ]
+    },
+    {
+        "id": "b0ee3967.d11488",
+        "type": "change",
+        "z": "238dca10.02b2b6",
+        "name": "Ostseite AltitudeLimit = 14",
+        "rules": [
+            {
+                "t": "set",
+                "p": "Beschattung.AltitudeLimit",
+                "pt": "msg",
+                "to": "15",
+                "tot": "num"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 510,
+        "y": 360,
+        "wires": [
+            [
+                "19afff6e.ed3631"
+            ]
+        ]
+    },
+    {
+        "id": "82baa30c.5791d",
+        "type": "function",
+        "z": "238dca10.02b2b6",
+        "name": "",
+        "func": "\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1490,
+        "y": 420,
+        "wires": [
+            [
+                "e341e34f.10384"
+            ]
+        ]
+    },
+    {
+        "id": "e158912a.7588c",
+        "type": "change",
+        "z": "238dca10.02b2b6",
+        "name": "Südseite AltitudeLimit = 5",
+        "rules": [
+            {
+                "t": "set",
+                "p": "Beschattung.AltitudeLimit",
+                "pt": "msg",
+                "to": "5",
+                "tot": "num"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 510,
+        "y": 400,
+        "wires": [
+            [
+                "19afff6e.ed3631"
+            ]
+        ]
+    },
+    {
+        "id": "ff963db0.5195e",
+        "type": "change",
+        "z": "238dca10.02b2b6",
+        "name": "Westseite AltitudeLimit = 5",
+        "rules": [
+            {
+                "t": "set",
+                "p": "Beschattung.AltitudeLimit",
+                "pt": "msg",
+                "to": "5",
+                "tot": "num"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 520,
+        "y": 440,
+        "wires": [
+            [
+                "19afff6e.ed3631"
+            ]
+        ]
+    },
+    {
+        "id": "bd5be89c.151818",
+        "type": "change",
+        "z": "238dca10.02b2b6",
+        "name": "Nordseite AltitudeLimit = 5",
+        "rules": [
+            {
+                "t": "set",
+                "p": "Beschattung.AltitudeLimit",
+                "pt": "msg",
+                "to": "5",
+                "tot": "num"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 510,
+        "y": 480,
+        "wires": [
+            [
+                "19afff6e.ed3631"
+            ]
+        ]
+    },
+    {
+        "id": "e341e34f.10384",
+        "type": "function",
+        "z": "238dca10.02b2b6",
+        "name": "Schutzstatus prüfen",
+        "func": "if (msg.Beschattung.RainProtection === true) {\n    msg.Beschattung.Status = \"Regenschutz\";\n    return [ msg, null, null ];\n} else if (msg.Beschattung.SunProtection === true) {\n    msg.Beschattung.Status = \"Sonnenschutz\";\n    return [ null, msg, null ];\n} else {\n    msg.Beschattung.Status = \"Kein Schutz nötig\";\n    return [ null, null, msg ];\n}",
+        "outputs": 3,
+        "noerr": 0,
+        "x": 1540,
+        "y": 500,
+        "wires": [
+            [
+                "3ea768c4.f74d78"
+            ],
+            [
+                "fa8b2dc6.afd3a"
+            ],
+            [
+                "71b3a68e.cf2788"
+            ]
+        ]
+    },
+    {
+        "id": "fa8b2dc6.afd3a",
+        "type": "function",
+        "z": "238dca10.02b2b6",
+        "name": "Prüfungen Sonnenschutz",
+        "func": "if (msg.Beschattung.AzimuthWindow === true &&\n    msg.Beschattung.Level != 1 &&\n    msg.Beschattung.Altitude >= msg.Beschattung.AltitudeLimit \n    ) {\n    msg.Beschattung.Protection = true;\n} else {\n    msg.Beschattung.Protection = false;\n    msg.Beschattung.Level = 1;\n}\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1850,
+        "y": 500,
+        "wires": [
+            [
+                "ffccc5a2.ce7b48"
+            ]
+        ]
+    },
+    {
+        "id": "3ea768c4.f74d78",
+        "type": "function",
+        "z": "238dca10.02b2b6",
+        "name": "Prüfungen Regenschutz",
+        "func": "if (msg.topic === \"Westseite\") {\n    msg.Beschattung.Protection = true;\n    msg.Beschattung.Level = 0;\n} else {\n    msg.Beschattung.Protection = false;\n    msg.Beschattung.Level = 1;\n}\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1850,
+        "y": 460,
+        "wires": [
+            [
+                "ffccc5a2.ce7b48"
+            ]
+        ]
+    },
+    {
+        "id": "71b3a68e.cf2788",
+        "type": "function",
+        "z": "238dca10.02b2b6",
+        "name": "Kein Schutz",
+        "func": "msg.Beschattung.Protection = false;\nmsg.Beschattung.Level = 1;\n\nreturn msg;\n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1810,
+        "y": 540,
+        "wires": [
+            [
+                "ffccc5a2.ce7b48"
+            ]
+        ]
+    },
+    {
+        "id": "44ba237e.7c889c",
+        "type": "function",
+        "z": "238dca10.02b2b6",
+        "name": "BackupCode_Beschattung",
+        "func": "if (msg.Beschattung.AzimuthWindow === true &&\n    msg.Beschattung.Level != 1 &&\n    msg.Beschattung.WindowProtection === false &&\n    msg.Beschattung.Altitude >= msg.Beschattung.AltitudeLimit \n    ) {\n    msg.Beschattung.Beschatten = true;\n} else if (msg.Beschattung.WindowProtection === true && msg.topic === \"Westseite\") {\n    msg.Beschattung.Beschatten = true;\n    msg.Beschattung.Level = 0;\n} else {\n    msg.Beschattung.Beschatten = false;\n    msg.Beschattung.Level = 1;\n}\nmsg.Beschattung.Percentage = Number(((1 - msg.Beschattung.Level) *100).toFixed(1));\n\nmsg.Beschattung.ImageURL = 'http://openweathermap.org/img/wn/' + global.get('openweather.current.weather[0].icon') + \"@2x.png\";\nmsg.payload = msg.Beschattung.Beschatten;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1860,
+        "y": 400,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "d836509a.67bc4",
+        "type": "position-config",
+        "name": "Mahlberg",
+        "isValide": "true",
+        "longitude": "0",
+        "latitude": "0",
+        "angleType": "deg",
+        "timeZoneOffset": 99,
+        "timeZoneDST": 0,
+        "stateTimeFormat": "3",
+        "stateDateFormat": "12"
+    },
+    {
+        "id": "f3e93b07.b92e98",
+        "type": "subflow:238dca10.02b2b6",
+        "z": "15796fd3.a7da1",
+        "name": "",
+        "x": 740,
+        "y": 180,
+        "wires": [
+            [],
+            []
+        ]
+    }
+]

@@ -1,0 +1,741 @@
+[
+    {
+        "id": "98659599.5c4be8",
+        "type": "http request",
+        "z": "27dc0fa2.cc5e1",
+        "name": "openweathermap",
+        "method": "GET",
+        "ret": "obj",
+        "paytoqs": false,
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "x": 350,
+        "y": 460,
+        "wires": [
+            [
+                "fc45fe39.218e1"
+            ]
+        ]
+    },
+    {
+        "id": "f4ff82a2.84fb8",
+        "type": "inject",
+        "z": "27dc0fa2.cc5e1",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "120",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 150,
+        "y": 460,
+        "wires": [
+            [
+                "98659599.5c4be8"
+            ]
+        ]
+    },
+    {
+        "id": "1434e6f2.495a89",
+        "type": "debug",
+        "z": "27dc0fa2.cc5e1",
+        "name": "",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "x": 790,
+        "y": 460,
+        "wires": []
+    },
+    {
+        "id": "fc45fe39.218e1",
+        "type": "function",
+        "z": "27dc0fa2.cc5e1",
+        "name": "set_global",
+        "func": "global.set(\"openweather\", msg.payload);\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 570,
+        "y": 440,
+        "wires": [
+            [
+                "1434e6f2.495a89",
+                "e071cd9c.468ac",
+                "bb2612c5.acf78",
+                "74bd8ba8.669284",
+                "9ec6a3b4.0be88",
+                "b055bdc6.3eb07",
+                "f39536a0.9a1048",
+                "629d5559.0efc3c"
+            ]
+        ]
+    },
+    {
+        "id": "e071cd9c.468ac",
+        "type": "switch",
+        "z": "27dc0fa2.cc5e1",
+        "name": "PrecipitationProtection",
+        "property": "payload.current.weather[0].id",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "btwn",
+                "v": "521",
+                "vt": "num",
+                "v2": "522",
+                "v2t": "num"
+            },
+            {
+                "t": "eq",
+                "v": "500",
+                "vt": "str"
+            },
+            {
+                "t": "btwn",
+                "v": "501",
+                "vt": "num",
+                "v2": "504",
+                "v2t": "num"
+            },
+            {
+                "t": "btwn",
+                "v": "312",
+                "vt": "num",
+                "v2": "314",
+                "v2t": "num"
+            },
+            {
+                "t": "eq",
+                "v": "302",
+                "vt": "num"
+            },
+            {
+                "t": "btwn",
+                "v": "231",
+                "vt": "num",
+                "v2": "232",
+                "v2t": "num"
+            },
+            {
+                "t": "btwn",
+                "v": "201",
+                "vt": "num",
+                "v2": "202",
+                "v2t": "num"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 8,
+        "x": 500,
+        "y": 740,
+        "wires": [
+            [
+                "4238d05e.83e1e"
+            ],
+            [
+                "d0623615.4ae578"
+            ],
+            [
+                "4238d05e.83e1e"
+            ],
+            [
+                "4238d05e.83e1e"
+            ],
+            [
+                "4238d05e.83e1e"
+            ],
+            [
+                "4238d05e.83e1e"
+            ],
+            [
+                "4238d05e.83e1e"
+            ],
+            [
+                "d290e4fd.f91f88"
+            ]
+        ]
+    },
+    {
+        "id": "4238d05e.83e1e",
+        "type": "change",
+        "z": "27dc0fa2.cc5e1",
+        "name": "PrecipitationProtection On",
+        "rules": [
+            {
+                "t": "set",
+                "p": "PrecipitationProtection",
+                "pt": "global",
+                "to": "true",
+                "tot": "bool"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 810,
+        "y": 740,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "bb2612c5.acf78",
+        "type": "change",
+        "z": "27dc0fa2.cc5e1",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "dailymaxtemp",
+                "pt": "global",
+                "to": "payload.daily[0].temp.max",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 840,
+        "y": 580,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "74bd8ba8.669284",
+        "type": "change",
+        "z": "27dc0fa2.cc5e1",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "WeatherCondition",
+                "pt": "global",
+                "to": "payload.current.weather[0].description",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 850,
+        "y": 500,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "9ec6a3b4.0be88",
+        "type": "change",
+        "z": "27dc0fa2.cc5e1",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "WeatherID",
+                "pt": "global",
+                "to": "payload.current.weather[0].id",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 830,
+        "y": 540,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "d290e4fd.f91f88",
+        "type": "change",
+        "z": "27dc0fa2.cc5e1",
+        "name": "PrecipitationProtection Off",
+        "rules": [
+            {
+                "t": "set",
+                "p": "RainProtection",
+                "pt": "global",
+                "to": "false",
+                "tot": "bool"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 810,
+        "y": 780,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "b055bdc6.3eb07",
+        "type": "change",
+        "z": "27dc0fa2.cc5e1",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "LastWeatherUpdate",
+                "pt": "global",
+                "to": "",
+                "tot": "date"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 850,
+        "y": 620,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "f39536a0.9a1048",
+        "type": "switch",
+        "z": "27dc0fa2.cc5e1",
+        "name": "SunProtection",
+        "property": "payload.current.weather[0].id",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "btwn",
+                "v": "800",
+                "vt": "num",
+                "v2": "804",
+                "v2t": "num"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 2,
+        "x": 480,
+        "y": 940,
+        "wires": [
+            [
+                "22d6e3f8.85776c"
+            ],
+            [
+                "83abcb2f.461fa8"
+            ]
+        ]
+    },
+    {
+        "id": "22d6e3f8.85776c",
+        "type": "change",
+        "z": "27dc0fa2.cc5e1",
+        "name": "Clear or Clouds <50%",
+        "rules": [
+            {
+                "t": "set",
+                "p": "SunProtection",
+                "pt": "global",
+                "to": "true",
+                "tot": "bool"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 715,
+        "y": 910,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "83abcb2f.461fa8",
+        "type": "change",
+        "z": "27dc0fa2.cc5e1",
+        "name": "Clouds >50%",
+        "rules": [
+            {
+                "t": "set",
+                "p": "SunProtection",
+                "pt": "global",
+                "to": "false",
+                "tot": "bool"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 700,
+        "y": 960,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "d0623615.4ae578",
+        "type": "switch",
+        "z": "27dc0fa2.cc5e1",
+        "name": "",
+        "property": "payload.current.wind_speed",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "gte",
+                "v": "20",
+                "vt": "num"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 760,
+        "y": 700,
+        "wires": [
+            [
+                "4238d05e.83e1e"
+            ],
+            [
+                "d290e4fd.f91f88"
+            ]
+        ]
+    },
+    {
+        "id": "629d5559.0efc3c",
+        "type": "switch",
+        "z": "27dc0fa2.cc5e1",
+        "name": "wind_direction",
+        "property": "payload.current.wind_deg",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "btwn",
+                "v": "330",
+                "vt": "num",
+                "v2": "30",
+                "v2t": "num"
+            },
+            {
+                "t": "btwn",
+                "v": "30",
+                "vt": "num",
+                "v2": "70",
+                "v2t": "num"
+            },
+            {
+                "t": "btwn",
+                "v": "70",
+                "vt": "num",
+                "v2": "110",
+                "v2t": "num"
+            },
+            {
+                "t": "btwn",
+                "v": "110",
+                "vt": "num",
+                "v2": "160",
+                "v2t": "num"
+            },
+            {
+                "t": "btwn",
+                "v": "160",
+                "vt": "num",
+                "v2": "210",
+                "v2t": "num"
+            },
+            {
+                "t": "btwn",
+                "v": "210",
+                "vt": "num",
+                "v2": "250",
+                "v2t": "num"
+            },
+            {
+                "t": "btwn",
+                "v": "250",
+                "vt": "num",
+                "v2": "290",
+                "v2t": "num"
+            },
+            {
+                "t": "btwn",
+                "v": "290",
+                "vt": "num",
+                "v2": "330",
+                "v2t": "num"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 8,
+        "x": 480,
+        "y": 1120,
+        "wires": [
+            [
+                "a8b4c54b.abed88"
+            ],
+            [
+                "463dbb18.e25ea4"
+            ],
+            [
+                "9e7fa0e2.4ed42"
+            ],
+            [
+                "2cf71bea.3de104"
+            ],
+            [
+                "2e5ed53a.7e101a"
+            ],
+            [
+                "d406edad.8a3d5"
+            ],
+            [
+                "f2082e10.aecf"
+            ],
+            [
+                "99597d7f.16027"
+            ]
+        ]
+    },
+    {
+        "id": "a8b4c54b.abed88",
+        "type": "change",
+        "z": "27dc0fa2.cc5e1",
+        "name": "N",
+        "rules": [
+            {
+                "t": "set",
+                "p": "wind_direction",
+                "pt": "global",
+                "to": "Nord",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 970,
+        "y": 960,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "463dbb18.e25ea4",
+        "type": "change",
+        "z": "27dc0fa2.cc5e1",
+        "name": "NO",
+        "rules": [
+            {
+                "t": "set",
+                "p": "wind_direction",
+                "pt": "global",
+                "to": "Nordost",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 970,
+        "y": 1000,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "9e7fa0e2.4ed42",
+        "type": "change",
+        "z": "27dc0fa2.cc5e1",
+        "name": "O",
+        "rules": [
+            {
+                "t": "set",
+                "p": "wind_direction",
+                "pt": "global",
+                "to": "Ost",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 970,
+        "y": 1040,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "2cf71bea.3de104",
+        "type": "change",
+        "z": "27dc0fa2.cc5e1",
+        "name": "SO",
+        "rules": [
+            {
+                "t": "set",
+                "p": "wind_direction",
+                "pt": "global",
+                "to": "Südost",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 970,
+        "y": 1080,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "2e5ed53a.7e101a",
+        "type": "change",
+        "z": "27dc0fa2.cc5e1",
+        "name": "S",
+        "rules": [
+            {
+                "t": "set",
+                "p": "wind_direction",
+                "pt": "global",
+                "to": "Süd",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 970,
+        "y": 1120,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "d406edad.8a3d5",
+        "type": "change",
+        "z": "27dc0fa2.cc5e1",
+        "name": "SW",
+        "rules": [
+            {
+                "t": "set",
+                "p": "wind_direction",
+                "pt": "global",
+                "to": "Südwest",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 970,
+        "y": 1160,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "f2082e10.aecf",
+        "type": "change",
+        "z": "27dc0fa2.cc5e1",
+        "name": "W",
+        "rules": [
+            {
+                "t": "set",
+                "p": "wind_direction",
+                "pt": "global",
+                "to": "West",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 970,
+        "y": 1200,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "99597d7f.16027",
+        "type": "change",
+        "z": "27dc0fa2.cc5e1",
+        "name": "NW",
+        "rules": [
+            {
+                "t": "set",
+                "p": "wind_direction",
+                "pt": "global",
+                "to": "Nordwest",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 970,
+        "y": 1240,
+        "wires": [
+            []
+        ]
+    }
+]
