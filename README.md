@@ -1,7 +1,7 @@
-# NodeRed Flow BoschSmartHome ShutterControl
-A Node-Red flow for the bosch smart home system to control your Shutters or Blinds by serveral weather events.
+# Node-RED Flow BoschSmartHome ShutterControl
+A flow to control your shutters or blinds by serveral weather events.
 
-#Install:
+# Install:
 Import the two json files to your node-red instance.
 
 You need to install the node node-red-contrib-sun-position in order to work with this flow:
