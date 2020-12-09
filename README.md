@@ -1,5 +1,4 @@
-# Node-RED Flow BoschSmartHome ShutterControl
-A flow to control your shutters or blinds by serveral weather events.
+# A flow to control your shutters or blinds by serveral weather events.
 
 # Install:
 Import the two json files to your node-red instance.
