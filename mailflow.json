@@ -1,0 +1,1930 @@
+[
+    {
+        "id": "22d340.43dc0cc",
+        "type": "subflow",
+        "name": "UpdateStatus",
+        "info": "",
+        "category": "",
+        "in": [
+            {
+                "x": 60,
+                "y": 80,
+                "wires": [
+                    {
+                        "id": "100a4688.50f869"
+                    }
+                ]
+            }
+        ],
+        "out": [],
+        "env": [],
+        "color": "#DDAA99"
+    },
+    {
+        "id": "cbfa8ab2.c53528",
+        "type": "function",
+        "z": "22d340.43dc0cc",
+        "name": "",
+        "func": "var data = flow.get(\"$parent.Shutters\");\nif (data === undefined) {\n   data = {};\n}\nvar propertyName = msg.topic;\nvar propertyValue = msg.payload.state.level;\ndata[propertyName] = propertyValue;\nflow.set(\"$parent.Shutters\", data);\nglobal.set(\"ShutterStatus\", data);\nreturn msg;",
+        "outputs": 0,
+        "noerr": 0,
+        "x": 350,
+        "y": 80,
+        "wires": []
+    },
+    {
+        "id": "100a4688.50f869",
+        "type": "string",
+        "z": "22d340.43dc0cc",
+        "name": "",
+        "methods": [
+            {
+                "name": "replaceAll",
+                "params": [
+                    {
+                        "type": "str",
+                        "value": " "
+                    },
+                    {
+                        "type": "str",
+                        "value": "_"
+                    }
+                ]
+            }
+        ],
+        "prop": "topic",
+        "propout": "topic",
+        "object": "msg",
+        "objectout": "msg",
+        "x": 190,
+        "y": 80,
+        "wires": [
+            [
+                "cbfa8ab2.c53528"
+            ]
+        ]
+    },
+    {
+        "id": "238dca10.02b2b6",
+        "type": "subflow",
+        "name": "Beschattung",
+        "info": "",
+        "category": "",
+        "in": [
+            {
+                "x": 80,
+                "y": 180,
+                "wires": [
+                    {
+                        "id": "c49bbd67.885b"
+                    }
+                ]
+            }
+        ],
+        "out": [
+            {
+                "x": 1920,
+                "y": 800,
+                "wires": [
+                    {
+                        "id": "3056b376.48edbc",
+                        "port": 0
+                    }
+                ]
+            },
+            {
+                "x": 1440,
+                "y": 820,
+                "wires": [
+                    {
+                        "id": "af049009.a16ee",
+                        "port": 0
+                    }
+                ]
+            }
+        ],
+        "env": [],
+        "color": "#DDAA99"
+    },
+    {
+        "id": "3056b376.48edbc",
+        "type": "change",
+        "z": "238dca10.02b2b6",
+        "name": "payload = Beschattung.Level",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "Beschattung.Level",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 2000,
+        "y": 700,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "c49bbd67.885b",
+        "type": "function",
+        "z": "238dca10.02b2b6",
+        "name": "Beschattung_SetValues",
+        "func": "let c = msg.sun\nmsg.Beschattung.Azimuth = Number(c.azimuth.toFixed(1));\nmsg.Beschattung.Altitude = Number(c.altitude.toFixed(1));\nmsg.Beschattung.Level = Number(msg.Beschattung.Level);\nmsg.Beschattung.DailyMaxTemp = global.get('dailymaxtemp');\nmsg.Beschattung.RainProtection = global.get('RainProtection');\nmsg.Beschattung.SunProtection = global.get('SunProtection');\nmsg.Beschattung.WeatherCondition = global.get('WeatherCondition');\nmsg.Beschattung.Sensor = global.get('daylight');\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 270,
+        "y": 180,
+        "wires": [
+            [
+                "112bb28b.d1ff8d"
+            ]
+        ]
+    },
+    {
+        "id": "ffccc5a2.ce7b48",
+        "type": "function",
+        "z": "238dca10.02b2b6",
+        "name": "SetFinalValues",
+        "func": "\nmsg.Beschattung.Percentage = Number(((1 - msg.Beschattung.Level) *100).toFixed(1));\nmsg.Beschattung.ImageURL = 'http://openweathermap.org/img/wn/' + global.get('openweather.current.weather[0].icon') + \"@2x.png\";\nmsg.payload = msg.Beschattung.Protection;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 2140,
+        "y": 500,
+        "wires": [
+            [
+                "af049009.a16ee"
+            ]
+        ]
+    },
+    {
+        "id": "1eb400c4.aedd0f",
+        "type": "rbe",
+        "z": "238dca10.02b2b6",
+        "name": "",
+        "func": "rbei",
+        "gap": "",
+        "start": "",
+        "inout": "out",
+        "property": "Beschattung.Protection",
+        "x": 1470,
+        "y": 700,
+        "wires": [
+            [
+                "73bb07a6.76d728"
+            ]
+        ]
+    },
+    {
+        "id": "19afff6e.ed3631",
+        "type": "switch",
+        "z": "238dca10.02b2b6",
+        "name": "Tageshöchsttemperatur",
+        "property": "dailymaxtemp",
+        "propertyType": "global",
+        "rules": [
+            {
+                "t": "lte",
+                "v": "15",
+                "vt": "str"
+            },
+            {
+                "t": "lt",
+                "v": "20",
+                "vt": "str"
+            },
+            {
+                "t": "lt",
+                "v": "24",
+                "vt": "str"
+            },
+            {
+                "t": "lt",
+                "v": "30",
+                "vt": "str"
+            },
+            {
+                "t": "gte",
+                "v": "30",
+                "vt": "str"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 5,
+        "x": 890,
+        "y": 420,
+        "wires": [
+            [
+                "27699aa3.f1c626"
+            ],
+            [
+                "65f25e5f.27f79"
+            ],
+            [
+                "9d4f078a.a35528"
+            ],
+            [
+                "304a7578.3b7b1a"
+            ],
+            [
+                "126fdcc.3e36b23"
+            ]
+        ]
+    },
+    {
+        "id": "304a7578.3b7b1a",
+        "type": "change",
+        "z": "238dca10.02b2b6",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "Beschattung.Level",
+                "pt": "msg",
+                "to": "0.2",
+                "tot": "num"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1180,
+        "y": 460,
+        "wires": [
+            [
+                "82baa30c.5791d"
+            ]
+        ]
+    },
+    {
+        "id": "1c276bcd.62d574",
+        "type": "comment",
+        "z": "238dca10.02b2b6",
+        "name": "0 = geschlossen | 1 = geöffnet",
+        "info": "0 = geschlossen\n1 = geöffnet",
+        "x": 1180,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "126fdcc.3e36b23",
+        "type": "change",
+        "z": "238dca10.02b2b6",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "Beschattung.Level",
+                "pt": "msg",
+                "to": "0",
+                "tot": "num"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1180,
+        "y": 500,
+        "wires": [
+            [
+                "82baa30c.5791d"
+            ]
+        ]
+    },
+    {
+        "id": "9d4f078a.a35528",
+        "type": "change",
+        "z": "238dca10.02b2b6",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "Beschattung.Level",
+                "pt": "msg",
+                "to": "0.6",
+                "tot": "num"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1180,
+        "y": 420,
+        "wires": [
+            [
+                "82baa30c.5791d"
+            ]
+        ]
+    },
+    {
+        "id": "65f25e5f.27f79",
+        "type": "change",
+        "z": "238dca10.02b2b6",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "Beschattung.Level",
+                "pt": "msg",
+                "to": "0.8",
+                "tot": "num"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1180,
+        "y": 380,
+        "wires": [
+            [
+                "82baa30c.5791d"
+            ]
+        ]
+    },
+    {
+        "id": "27699aa3.f1c626",
+        "type": "change",
+        "z": "238dca10.02b2b6",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "Beschattung.Level",
+                "pt": "msg",
+                "to": "1",
+                "tot": "num"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1180,
+        "y": 340,
+        "wires": [
+            [
+                "82baa30c.5791d"
+            ]
+        ]
+    },
+    {
+        "id": "af049009.a16ee",
+        "type": "template",
+        "z": "238dca10.02b2b6",
+        "name": "INFO",
+        "field": "Beschattung.Info",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "🌞 *Schutz für {{topic}}: {{Beschattung.Protection}}*\nRollladen-Sollwert: {{Beschattung.Percentage}}%\nStatus: {{Beschattung.Status}}\nWetter: {{Beschattung.WeatherCondition}} / {{Beschattung.DailyMaxTemp}}°C\nAzimuth: {{Beschattung.Azimuth}} / {{Beschattung.AzimuthWindow}} \nAltitude: {{Beschattung.Altitude}}",
+        "output": "str",
+        "x": 1310,
+        "y": 700,
+        "wires": [
+            [
+                "1eb400c4.aedd0f"
+            ]
+        ]
+    },
+    {
+        "id": "73bb07a6.76d728",
+        "type": "within-time-switch",
+        "z": "238dca10.02b2b6",
+        "name": "",
+        "positionConfig": "d836509a.67bc4",
+        "startTime": "sunriseEnd",
+        "startTimeType": "pdsTime",
+        "startOffset": 0,
+        "startOffsetType": "none",
+        "startOffsetMultiplier": 60000,
+        "endTime": "sunset",
+        "endTimeType": "pdsTime",
+        "endOffset": 0,
+        "endOffsetType": "none",
+        "endOffsetMultiplier": 60000,
+        "timeDays": "*",
+        "timeOnlyOddDays": false,
+        "timeOnlyEvenDays": false,
+        "timeMonths": "*",
+        "timedatestart": "",
+        "timedateend": "",
+        "propertyStart": "",
+        "propertyStartType": "none",
+        "propertyStartCompare": "true",
+        "propertyStartThreshold": "",
+        "propertyStartThresholdType": "num",
+        "startTimeAlt": "",
+        "startTimeAltType": "entered",
+        "startOffsetAlt": 0,
+        "startOffsetAltType": "none",
+        "startOffsetAltMultiplier": 60000,
+        "propertyEnd": "",
+        "propertyEndType": "none",
+        "propertyEndCompare": "true",
+        "propertyEndThreshold": "",
+        "propertyEndThresholdType": "num",
+        "endTimeAlt": "",
+        "endTimeAltType": "entered",
+        "endOffsetAlt": 0,
+        "endOffsetAltType": "none",
+        "endOffsetAltMultiplier": 60000,
+        "tsCompare": "0",
+        "x": 1700,
+        "y": 700,
+        "wires": [
+            [
+                "3056b376.48edbc"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "112bb28b.d1ff8d",
+        "type": "switch",
+        "z": "238dca10.02b2b6",
+        "name": "Hausseite",
+        "property": "topic",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "Ostseite",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "Südseite",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "Westseite",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "Nordseite",
+                "vt": "str"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 4,
+        "x": 200,
+        "y": 420,
+        "wires": [
+            [
+                "b0ee3967.d11488"
+            ],
+            [
+                "e158912a.7588c"
+            ],
+            [
+                "ff963db0.5195e"
+            ],
+            [
+                "bd5be89c.151818"
+            ]
+        ]
+    },
+    {
+        "id": "b0ee3967.d11488",
+        "type": "change",
+        "z": "238dca10.02b2b6",
+        "name": "Ostseite AltitudeLimit = 14",
+        "rules": [
+            {
+                "t": "set",
+                "p": "Beschattung.AltitudeLimit",
+                "pt": "msg",
+                "to": "15",
+                "tot": "num"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 510,
+        "y": 360,
+        "wires": [
+            [
+                "19afff6e.ed3631"
+            ]
+        ]
+    },
+    {
+        "id": "82baa30c.5791d",
+        "type": "function",
+        "z": "238dca10.02b2b6",
+        "name": "",
+        "func": "\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1490,
+        "y": 420,
+        "wires": [
+            [
+                "e341e34f.10384"
+            ]
+        ]
+    },
+    {
+        "id": "e158912a.7588c",
+        "type": "change",
+        "z": "238dca10.02b2b6",
+        "name": "Südseite AltitudeLimit = 5",
+        "rules": [
+            {
+                "t": "set",
+                "p": "Beschattung.AltitudeLimit",
+                "pt": "msg",
+                "to": "5",
+                "tot": "num"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 510,
+        "y": 400,
+        "wires": [
+            [
+                "19afff6e.ed3631"
+            ]
+        ]
+    },
+    {
+        "id": "ff963db0.5195e",
+        "type": "change",
+        "z": "238dca10.02b2b6",
+        "name": "Westseite AltitudeLimit = 5",
+        "rules": [
+            {
+                "t": "set",
+                "p": "Beschattung.AltitudeLimit",
+                "pt": "msg",
+                "to": "5",
+                "tot": "num"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 520,
+        "y": 440,
+        "wires": [
+            [
+                "19afff6e.ed3631"
+            ]
+        ]
+    },
+    {
+        "id": "bd5be89c.151818",
+        "type": "change",
+        "z": "238dca10.02b2b6",
+        "name": "Nordseite AltitudeLimit = 5",
+        "rules": [
+            {
+                "t": "set",
+                "p": "Beschattung.AltitudeLimit",
+                "pt": "msg",
+                "to": "5",
+                "tot": "num"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 510,
+        "y": 480,
+        "wires": [
+            [
+                "19afff6e.ed3631"
+            ]
+        ]
+    },
+    {
+        "id": "e341e34f.10384",
+        "type": "function",
+        "z": "238dca10.02b2b6",
+        "name": "Schutzstatus prüfen",
+        "func": "if (msg.Beschattung.RainProtection === true) {\n    msg.Beschattung.Status = \"Regenschutz\";\n    return [ msg, null, null ];\n} else if (msg.Beschattung.SunProtection === true) {\n    msg.Beschattung.Status = \"Sonnenschutz\";\n    return [ null, msg, null ];\n} else {\n    msg.Beschattung.Status = \"Kein Schutz nötig\";\n    return [ null, null, msg ];\n}",
+        "outputs": 3,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1540,
+        "y": 500,
+        "wires": [
+            [
+                "3ea768c4.f74d78"
+            ],
+            [
+                "fa8b2dc6.afd3a"
+            ],
+            [
+                "71b3a68e.cf2788"
+            ]
+        ]
+    },
+    {
+        "id": "fa8b2dc6.afd3a",
+        "type": "function",
+        "z": "238dca10.02b2b6",
+        "name": "Prüfungen Sonnenschutz",
+        "func": "if (msg.Beschattung.AzimuthWindow === true &&\n    msg.Beschattung.Level != 1 &&\n    msg.Beschattung.Sensor.daylight === true &&\n    msg.Beschattung.Altitude >= msg.Beschattung.AltitudeLimit \n    ) {\n    msg.Beschattung.Protection = true;\n} else {\n    msg.Beschattung.Protection = false;\n    msg.Beschattung.Level = 1;\n}\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1850,
+        "y": 500,
+        "wires": [
+            [
+                "ffccc5a2.ce7b48"
+            ]
+        ]
+    },
+    {
+        "id": "3ea768c4.f74d78",
+        "type": "function",
+        "z": "238dca10.02b2b6",
+        "name": "Prüfungen Regenschutz",
+        "func": "if (msg.topic === \"Westseite\") {\n    msg.Beschattung.Protection = true;\n    msg.Beschattung.Level = 0;\n} else {\n    msg.Beschattung.Protection = false;\n    msg.Beschattung.Level = 1;\n}\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1850,
+        "y": 460,
+        "wires": [
+            [
+                "ffccc5a2.ce7b48"
+            ]
+        ]
+    },
+    {
+        "id": "71b3a68e.cf2788",
+        "type": "function",
+        "z": "238dca10.02b2b6",
+        "name": "Kein Schutz",
+        "func": "msg.Beschattung.Protection = false;\nmsg.Beschattung.Level = 1;\n\nreturn msg;\n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1810,
+        "y": 540,
+        "wires": [
+            [
+                "ffccc5a2.ce7b48"
+            ]
+        ]
+    },
+    {
+        "id": "44ba237e.7c889c",
+        "type": "function",
+        "z": "238dca10.02b2b6",
+        "name": "BackupCode_Beschattung",
+        "func": "if (msg.Beschattung.AzimuthWindow === true &&\n    msg.Beschattung.Level != 1 &&\n    msg.Beschattung.WindowProtection === false &&\n    msg.Beschattung.Altitude >= msg.Beschattung.AltitudeLimit \n    ) {\n    msg.Beschattung.Beschatten = true;\n} else if (msg.Beschattung.WindowProtection === true && msg.topic === \"Westseite\") {\n    msg.Beschattung.Beschatten = true;\n    msg.Beschattung.Level = 0;\n} else {\n    msg.Beschattung.Beschatten = false;\n    msg.Beschattung.Level = 1;\n}\nmsg.Beschattung.Percentage = Number(((1 - msg.Beschattung.Level) *100).toFixed(1));\n\nmsg.Beschattung.ImageURL = 'http://openweathermap.org/img/wn/' + global.get('openweather.current.weather[0].icon') + \"@2x.png\";\nmsg.payload = msg.Beschattung.Beschatten;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1860,
+        "y": 400,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "3ba0bc4a595821dd",
+        "type": "tab",
+        "label": "Flow 2",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "5ab7e0eef44f56ba",
+        "type": "sun-position",
+        "z": "3ba0bc4a595821dd",
+        "name": "",
+        "positionConfig": "d836509a.67bc4",
+        "rules": [
+            {
+                "valueLow": "60",
+                "valueLowType": "num",
+                "valueHigh": "140",
+                "valueHighType": "num"
+            },
+            {
+                "valueLow": "110",
+                "valueLowType": "num",
+                "valueHigh": "180",
+                "valueHighType": "num"
+            },
+            {
+                "valueLow": "173",
+                "valueLowType": "num",
+                "valueHigh": "300",
+                "valueHighType": "num"
+            },
+            {
+                "valueLow": "268",
+                "valueLowType": "num",
+                "valueHigh": "320",
+                "valueHighType": "num"
+            }
+        ],
+        "onlyOnChange": "true",
+        "topic": "",
+        "outputs": 5,
+        "start": "sunriseEnd",
+        "startType": "pdsTime",
+        "startOffset": 0,
+        "startOffsetType": "none",
+        "startOffsetMultiplier": 60000,
+        "end": "sunset",
+        "endType": "pdsTime",
+        "endOffset": 0,
+        "endOffsetType": "none",
+        "endOffsetMultiplier": 60000,
+        "x": 910,
+        "y": 360,
+        "wires": [
+            [
+                "3ee3532f3ffc7f23"
+            ],
+            [],
+            [],
+            [],
+            []
+        ]
+    },
+    {
+        "id": "3b2c37bbd22701ac",
+        "type": "inject",
+        "z": "3ba0bc4a595821dd",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "300",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 710,
+        "y": 360,
+        "wires": [
+            [
+                "5ab7e0eef44f56ba"
+            ]
+        ]
+    },
+    {
+        "id": "95f7f1a3708ef756",
+        "type": "shc-device",
+        "z": "3ba0bc4a595821dd",
+        "shc": "a0c996c7.3b4ad8",
+        "device": "Rollladen rechts|hdm:HomeMaticIP:3014F711A00018DA1859AABD|BBL|ShutterControl",
+        "service": "ShutterControl",
+        "state": "",
+        "name": "",
+        "x": 2420,
+        "y": 580,
+        "wires": [
+            [
+                "f2e7a280ef3ce0ca"
+            ]
+        ]
+    },
+    {
+        "id": "d915e4bf3e5ac9ce",
+        "type": "shc-device",
+        "z": "3ba0bc4a595821dd",
+        "shc": "a0c996c7.3b4ad8",
+        "device": "Rollladen links|hdm:HomeMaticIP:3014F711A00018DA1859AACC|BBL|ShutterControl",
+        "service": "ShutterControl",
+        "state": "",
+        "name": "",
+        "x": 2420,
+        "y": 640,
+        "wires": [
+            [
+                "f2e7a280ef3ce0ca"
+            ]
+        ]
+    },
+    {
+        "id": "06ddb5dcd0db87ba",
+        "type": "comment",
+        "z": "3ba0bc4a595821dd",
+        "name": "Westseite",
+        "info": "",
+        "x": 2140,
+        "y": 500,
+        "wires": []
+    },
+    {
+        "id": "53c34bb9428af632",
+        "type": "shc-device",
+        "z": "3ba0bc4a595821dd",
+        "shc": "a0c996c7.3b4ad8",
+        "device": "Rollladen Tisch|hdm:HomeMaticIP:3014F711A00018DA1859AFC7|BBL|ShutterControl",
+        "service": "ShutterControl",
+        "state": "",
+        "name": "",
+        "x": 2420,
+        "y": 700,
+        "wires": [
+            [
+                "f2e7a280ef3ce0ca"
+            ]
+        ]
+    },
+    {
+        "id": "bd3c0cc525d3aa4e",
+        "type": "shc-device",
+        "z": "3ba0bc4a595821dd",
+        "shc": "a0c996c7.3b4ad8",
+        "device": "Rollladen Couch|hdm:HomeMaticIP:3014F711A00018D878595A00|BBL|ShutterControl",
+        "service": "ShutterControl",
+        "state": "",
+        "name": "",
+        "x": 2420,
+        "y": 760,
+        "wires": [
+            [
+                "f2e7a280ef3ce0ca"
+            ]
+        ]
+    },
+    {
+        "id": "de96874ccc13b72b",
+        "type": "shc-device",
+        "z": "3ba0bc4a595821dd",
+        "shc": "a0c996c7.3b4ad8",
+        "device": "Rollladen WC|hdm:HomeMaticIP:3014F711A00018DA1859F6F2|BBL|ShutterControl",
+        "service": "ShutterControl",
+        "state": "",
+        "name": "",
+        "x": 2420,
+        "y": 220,
+        "wires": [
+            [
+                "f2e7a280ef3ce0ca"
+            ]
+        ]
+    },
+    {
+        "id": "6bf30a41c0ce7373",
+        "type": "shc-device",
+        "z": "3ba0bc4a595821dd",
+        "shc": "a0c996c7.3b4ad8",
+        "device": "Rolladen Küche|hdm:HomeMaticIP:3014F711A00018DA185A69C6|BBL|ShutterControl",
+        "service": "ShutterControl",
+        "state": "",
+        "name": "",
+        "x": 2420,
+        "y": 280,
+        "wires": [
+            [
+                "f2e7a280ef3ce0ca"
+            ]
+        ]
+    },
+    {
+        "id": "91722c12112d659f",
+        "type": "comment",
+        "z": "3ba0bc4a595821dd",
+        "name": "Ostseite",
+        "info": "",
+        "x": 2140,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "10195fbf53f97578",
+        "type": "shc-device",
+        "z": "3ba0bc4a595821dd",
+        "shc": "a0c996c7.3b4ad8",
+        "device": "Rollladen Bad|hdm:HomeMaticIP:3014F711A00018DA1859F6D2|BBL|ShutterControl",
+        "service": "ShutterControl",
+        "state": "",
+        "name": "",
+        "x": 2420,
+        "y": 340,
+        "wires": [
+            [
+                "f2e7a280ef3ce0ca"
+            ]
+        ]
+    },
+    {
+        "id": "eb522cd6da369335",
+        "type": "shc-device",
+        "z": "3ba0bc4a595821dd",
+        "shc": "a0c996c7.3b4ad8",
+        "device": "Rollladen Fenster|hdm:HomeMaticIP:3014F711A00018DA185B160A|BBL|ShutterControl",
+        "service": "ShutterControl",
+        "state": "",
+        "name": "",
+        "x": 2730,
+        "y": 1060,
+        "wires": [
+            [
+                "f2e7a280ef3ce0ca"
+            ]
+        ]
+    },
+    {
+        "id": "3e05b5abe9a57816",
+        "type": "shc-device",
+        "z": "3ba0bc4a595821dd",
+        "shc": "a0c996c7.3b4ad8",
+        "device": "Rollladen Tür|hdm:HomeMaticIP:3014F711A00018DA185B15F9|BBL|ShutterControl",
+        "service": "ShutterControl",
+        "state": "",
+        "name": "",
+        "x": 2710,
+        "y": 1140,
+        "wires": [
+            [
+                "f2e7a280ef3ce0ca"
+            ]
+        ]
+    },
+    {
+        "id": "74a477567694404b",
+        "type": "comment",
+        "z": "3ba0bc4a595821dd",
+        "name": "Nordseite",
+        "info": "",
+        "x": 2140,
+        "y": 1000,
+        "wires": []
+    },
+    {
+        "id": "d8d81ce746ee4566",
+        "type": "shc-device",
+        "z": "3ba0bc4a595821dd",
+        "shc": "a0c996c7.3b4ad8",
+        "device": "Rollanden Straße|hdm:HomeMaticIP:3014F711A00018DA1859AAAA|BBL|ShutterControl",
+        "service": "ShutterControl",
+        "state": "",
+        "name": "",
+        "x": 2730,
+        "y": 1200,
+        "wires": [
+            [
+                "f2e7a280ef3ce0ca"
+            ]
+        ]
+    },
+    {
+        "id": "051b4047b2308c82",
+        "type": "shc-device",
+        "z": "3ba0bc4a595821dd",
+        "shc": "a0c996c7.3b4ad8",
+        "device": "Rolladen Straße Bügelraum|hdm:HomeMaticIP:3014F711A00018DA1859AAB4|BBL|ShutterControl",
+        "service": "ShutterControl",
+        "state": "",
+        "name": "",
+        "x": 2760,
+        "y": 1260,
+        "wires": [
+            [
+                "f2e7a280ef3ce0ca"
+            ]
+        ]
+    },
+    {
+        "id": "3ee3532f3ffc7f23",
+        "type": "change",
+        "z": "3ba0bc4a595821dd",
+        "name": "Werte Festlegen",
+        "rules": [
+            {
+                "t": "move",
+                "p": "payload",
+                "pt": "msg",
+                "to": "sun",
+                "tot": "msg"
+            },
+            {
+                "t": "set",
+                "p": "payload.Ostseite",
+                "pt": "msg",
+                "to": "sun.pos.0",
+                "tot": "msg"
+            },
+            {
+                "t": "set",
+                "p": "payload.Südseite",
+                "pt": "msg",
+                "to": "sun.pos.1",
+                "tot": "msg"
+            },
+            {
+                "t": "set",
+                "p": "payload.Westseite",
+                "pt": "msg",
+                "to": "sun.pos.2",
+                "tot": "msg"
+            },
+            {
+                "t": "set",
+                "p": "payload.Nordseite",
+                "pt": "msg",
+                "to": "sun.pos.3",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1140,
+        "y": 340,
+        "wires": [
+            [
+                "8d3ae7a702bb163c",
+                "59cdeb8233b432a4",
+                "724d4c873034a95f",
+                "fb6cfb5e543601c4"
+            ]
+        ]
+    },
+    {
+        "id": "8d3ae7a702bb163c",
+        "type": "change",
+        "z": "3ba0bc4a595821dd",
+        "name": "Ostseite",
+        "rules": [
+            {
+                "t": "set",
+                "p": "Beschattung.AzimuthWindow",
+                "pt": "msg",
+                "to": "payload.Ostseite",
+                "tot": "msg"
+            },
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "Ostseite",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1360,
+        "y": 280,
+        "wires": [
+            [
+                "6c67ebc4bb1be9eb"
+            ]
+        ]
+    },
+    {
+        "id": "59cdeb8233b432a4",
+        "type": "change",
+        "z": "3ba0bc4a595821dd",
+        "name": "Südseite",
+        "rules": [
+            {
+                "t": "set",
+                "p": "Beschattung.AzimuthWindow",
+                "pt": "msg",
+                "to": "payload.Südseite",
+                "tot": "msg"
+            },
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "Südseite",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1360,
+        "y": 320,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "724d4c873034a95f",
+        "type": "change",
+        "z": "3ba0bc4a595821dd",
+        "name": "Westseite",
+        "rules": [
+            {
+                "t": "set",
+                "p": "Beschattung.AzimuthWindow",
+                "pt": "msg",
+                "to": "payload.Westseite",
+                "tot": "msg"
+            },
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "Westseite",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1360,
+        "y": 360,
+        "wires": [
+            [
+                "4bd7bd35aad34910"
+            ]
+        ]
+    },
+    {
+        "id": "fb6cfb5e543601c4",
+        "type": "change",
+        "z": "3ba0bc4a595821dd",
+        "name": "Nordseite",
+        "rules": [
+            {
+                "t": "set",
+                "p": "Beschattung.AzimuthWindow",
+                "pt": "msg",
+                "to": "payload.Nordseite",
+                "tot": "msg"
+            },
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "Nordseite",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1360,
+        "y": 400,
+        "wires": [
+            [
+                "661c97f9a9f562a6"
+            ]
+        ]
+    },
+    {
+        "id": "c79a2edb501264e0",
+        "type": "subflow:238dca10.02b2b6",
+        "z": "3ba0bc4a595821dd",
+        "name": "",
+        "env": [],
+        "x": 1890,
+        "y": 460,
+        "wires": [
+            [
+                "5450bb6aa080790c",
+                "b8cf2af1568721bf"
+            ],
+            [
+                "f0fa60c21665cf2d"
+            ]
+        ]
+    },
+    {
+        "id": "6c67ebc4bb1be9eb",
+        "type": "subflow:238dca10.02b2b6",
+        "z": "3ba0bc4a595821dd",
+        "name": "",
+        "env": [],
+        "x": 1910,
+        "y": 260,
+        "wires": [
+            [
+                "76aa722055688788",
+                "70a08e16ee597674",
+                "f4b43281b62ac156",
+                "e91febe40cc3ac17"
+            ],
+            [
+                "935b6dc1e314ef50"
+            ]
+        ]
+    },
+    {
+        "id": "76aa722055688788",
+        "type": "delay",
+        "z": "3ba0bc4a595821dd",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "2",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "outputs": 1,
+        "x": 2160,
+        "y": 280,
+        "wires": [
+            [
+                "6bf30a41c0ce7373"
+            ]
+        ]
+    },
+    {
+        "id": "70a08e16ee597674",
+        "type": "delay",
+        "z": "3ba0bc4a595821dd",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "3",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "outputs": 1,
+        "x": 2160,
+        "y": 340,
+        "wires": [
+            [
+                "10195fbf53f97578"
+            ]
+        ]
+    },
+    {
+        "id": "f4b43281b62ac156",
+        "type": "delay",
+        "z": "3ba0bc4a595821dd",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "1",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "outputs": 1,
+        "x": 2160,
+        "y": 220,
+        "wires": [
+            [
+                "de96874ccc13b72b"
+            ]
+        ]
+    },
+    {
+        "id": "baecd102a35fa810",
+        "type": "delay",
+        "z": "3ba0bc4a595821dd",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "2",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "outputs": 1,
+        "x": 2160,
+        "y": 640,
+        "wires": [
+            [
+                "d915e4bf3e5ac9ce"
+            ]
+        ]
+    },
+    {
+        "id": "50757543050436d3",
+        "type": "delay",
+        "z": "3ba0bc4a595821dd",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "3",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "outputs": 1,
+        "x": 2160,
+        "y": 700,
+        "wires": [
+            [
+                "53c34bb9428af632"
+            ]
+        ]
+    },
+    {
+        "id": "0593c13f76678e69",
+        "type": "delay",
+        "z": "3ba0bc4a595821dd",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "1",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "outputs": 1,
+        "x": 2160,
+        "y": 580,
+        "wires": [
+            [
+                "95f7f1a3708ef756"
+            ]
+        ]
+    },
+    {
+        "id": "d506a0b05416543c",
+        "type": "delay",
+        "z": "3ba0bc4a595821dd",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "4",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "outputs": 1,
+        "x": 2160,
+        "y": 760,
+        "wires": [
+            [
+                "bd3c0cc525d3aa4e"
+            ]
+        ]
+    },
+    {
+        "id": "ac288b269f80a414",
+        "type": "subflow:238dca10.02b2b6",
+        "z": "3ba0bc4a595821dd",
+        "name": "",
+        "env": [],
+        "x": 1930,
+        "y": 960,
+        "wires": [
+            [
+                "ed66d6e9654333cb",
+                "2b2aa90b31e9b693",
+                "5f352fe28ed9f41b",
+                "6ad773e5db088e92"
+            ],
+            [
+                "b9e274d30b4de389"
+            ]
+        ]
+    },
+    {
+        "id": "5450bb6aa080790c",
+        "type": "change",
+        "z": "3ba0bc4a595821dd",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "Beschattung.Info",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 2170,
+        "y": 460,
+        "wires": [
+            [
+                "f7f5d784aa182c13"
+            ]
+        ]
+    },
+    {
+        "id": "f7f5d784aa182c13",
+        "type": "telegrambot-notify",
+        "z": "3ba0bc4a595821dd",
+        "name": "",
+        "bot": "ece63a5a.f6cbe8",
+        "chatId": "962696606",
+        "message": "",
+        "parseMode": "Markdown",
+        "x": 2420,
+        "y": 460,
+        "wires": []
+    },
+    {
+        "id": "ed66d6e9654333cb",
+        "type": "change",
+        "z": "3ba0bc4a595821dd",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "Beschattung.Info",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 2170,
+        "y": 960,
+        "wires": [
+            [
+                "b2a8f931d17bb7f5"
+            ]
+        ]
+    },
+    {
+        "id": "b2a8f931d17bb7f5",
+        "type": "telegrambot-notify",
+        "z": "3ba0bc4a595821dd",
+        "name": "",
+        "bot": "ece63a5a.f6cbe8",
+        "chatId": "962696606",
+        "message": "",
+        "parseMode": "Markdown",
+        "x": 2420,
+        "y": 960,
+        "wires": []
+    },
+    {
+        "id": "2b2aa90b31e9b693",
+        "type": "within-time-switch",
+        "z": "3ba0bc4a595821dd",
+        "name": "",
+        "positionConfig": "d836509a.67bc4",
+        "startTime": "solarNoon",
+        "startTimeType": "pdsTime",
+        "startOffset": 0,
+        "startOffsetType": "none",
+        "startOffsetMultiplier": 60000,
+        "endTime": "sunsetStart",
+        "endTimeType": "pdsTime",
+        "endOffset": 0,
+        "endOffsetType": "none",
+        "endOffsetMultiplier": 60000,
+        "timeRestrictions": "",
+        "timeRestrictionsType": "none",
+        "timeDays": "*",
+        "timeOnlyOddDays": false,
+        "timeOnlyEvenDays": false,
+        "timeMonths": "*",
+        "timedatestart": "",
+        "timedateend": "",
+        "propertyStart": "",
+        "propertyStartType": "none",
+        "propertyStartCompare": "true",
+        "propertyStartThreshold": "",
+        "propertyStartThresholdType": "num",
+        "startTimeAlt": "",
+        "startTimeAltType": "entered",
+        "startOffsetAlt": 0,
+        "startOffsetAltType": "none",
+        "startOffsetAltMultiplier": 60000,
+        "propertyEnd": "",
+        "propertyEndType": "none",
+        "propertyEndCompare": "true",
+        "propertyEndThreshold": "",
+        "propertyEndThresholdType": "num",
+        "endTimeAlt": "",
+        "endTimeAltType": "entered",
+        "endOffsetAlt": 0,
+        "endOffsetAltType": "none",
+        "endOffsetAltMultiplier": 60000,
+        "tsCompare": "0",
+        "x": 2200,
+        "y": 1100,
+        "wires": [
+            [
+                "36a528fdb6b4f6ac",
+                "e1f5defa56be835b"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "4bd7bd35aad34910",
+        "type": "delay",
+        "z": "3ba0bc4a595821dd",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "10",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "outputs": 1,
+        "x": 1690,
+        "y": 460,
+        "wires": [
+            [
+                "c79a2edb501264e0"
+            ]
+        ]
+    },
+    {
+        "id": "661c97f9a9f562a6",
+        "type": "delay",
+        "z": "3ba0bc4a595821dd",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "20",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "outputs": 1,
+        "x": 1750,
+        "y": 960,
+        "wires": [
+            [
+                "ac288b269f80a414"
+            ]
+        ]
+    },
+    {
+        "id": "36a528fdb6b4f6ac",
+        "type": "delay",
+        "z": "3ba0bc4a595821dd",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "1",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "outputs": 1,
+        "x": 2480,
+        "y": 1060,
+        "wires": [
+            [
+                "eb522cd6da369335"
+            ]
+        ]
+    },
+    {
+        "id": "e1f5defa56be835b",
+        "type": "delay",
+        "z": "3ba0bc4a595821dd",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "2",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "outputs": 1,
+        "x": 2480,
+        "y": 1140,
+        "wires": [
+            [
+                "3e05b5abe9a57816"
+            ]
+        ]
+    },
+    {
+        "id": "5f352fe28ed9f41b",
+        "type": "delay",
+        "z": "3ba0bc4a595821dd",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "3",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "outputs": 1,
+        "x": 2160,
+        "y": 1200,
+        "wires": [
+            [
+                "d8d81ce746ee4566"
+            ]
+        ]
+    },
+    {
+        "id": "6ad773e5db088e92",
+        "type": "delay",
+        "z": "3ba0bc4a595821dd",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "4",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "outputs": 1,
+        "x": 2160,
+        "y": 1260,
+        "wires": [
+            [
+                "051b4047b2308c82"
+            ]
+        ]
+    },
+    {
+        "id": "e726e3189bd02252",
+        "type": "telegrambot-notify",
+        "z": "3ba0bc4a595821dd",
+        "name": "",
+        "bot": "ece63a5a.f6cbe8",
+        "chatId": "962696606",
+        "message": "",
+        "parseMode": "Markdown",
+        "x": 2420,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "e91febe40cc3ac17",
+        "type": "change",
+        "z": "3ba0bc4a595821dd",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "Beschattung.Info",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 2170,
+        "y": 160,
+        "wires": [
+            [
+                "e726e3189bd02252"
+            ]
+        ]
+    },
+    {
+        "id": "f2e7a280ef3ce0ca",
+        "type": "subflow:22d340.43dc0cc",
+        "z": "3ba0bc4a595821dd",
+        "name": "ToFlow",
+        "env": [],
+        "x": 3020,
+        "y": 460,
+        "wires": []
+    },
+    {
+        "id": "28141646a8eb1032",
+        "type": "inject",
+        "z": "3ba0bc4a595821dd",
+        "name": "",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 1940,
+        "y": 160,
+        "wires": [
+            [
+                "f4b43281b62ac156",
+                "76aa722055688788",
+                "70a08e16ee597674"
+            ]
+        ]
+    },
+    {
+        "id": "ad3962d3e45c76e9",
+        "type": "shc-device",
+        "z": "3ba0bc4a595821dd",
+        "shc": "a0c996c7.3b4ad8",
+        "device": "Rollladen Terrasse|hdm:HomeMaticIP:3014F711A00018DA1859AA9B|BBL|ShutterControl",
+        "service": "ShutterControl",
+        "state": "",
+        "name": "",
+        "x": 2430,
+        "y": 880,
+        "wires": [
+            [
+                "f2e7a280ef3ce0ca"
+            ]
+        ]
+    },
+    {
+        "id": "b8cf2af1568721bf",
+        "type": "switch",
+        "z": "3ba0bc4a595821dd",
+        "name": "ShuttersLivingroom = TRUE?",
+        "property": "ShuttersLivingroom",
+        "propertyType": "global",
+        "rules": [
+            {
+                "t": "true"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 1870,
+        "y": 620,
+        "wires": [
+            [
+                "0593c13f76678e69",
+                "baecd102a35fa810",
+                "50757543050436d3",
+                "d506a0b05416543c"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "b9e274d30b4de389",
+        "type": "debug",
+        "z": "3ba0bc4a595821dd",
+        "name": "SUBFLOW_Beschattung",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 1890,
+        "y": 1040,
+        "wires": []
+    },
+    {
+        "id": "f0fa60c21665cf2d",
+        "type": "debug",
+        "z": "3ba0bc4a595821dd",
+        "name": "SUBFLOW_Beschattung",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 1890,
+        "y": 520,
+        "wires": []
+    },
+    {
+        "id": "935b6dc1e314ef50",
+        "type": "debug",
+        "z": "3ba0bc4a595821dd",
+        "name": "SUBFLOW_Beschattung",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 1890,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "d836509a.67bc4",
+        "type": "position-config",
+        "name": "Ort",
+        "isValide": "true",
+        "longitude": "0",
+        "latitude": "0",
+        "angleType": "deg",
+        "timeZoneOffset": 99,
+        "timeZoneDST": 0,
+        "stateTimeFormat": "3",
+        "stateDateFormat": "12"
+    },
+    {
+        "id": "a0c996c7.3b4ad8",
+        "type": "shc-config",
+        "shcip": "192.168.178.63",
+        "clientid": "node-red-contrib-bosch-shc",
+        "clientname": "Node-RED-Contrib-Bosch-SHC",
+        "state": "PAIRED"
+    },
+    {
+        "id": "ece63a5a.f6cbe8",
+        "type": "telegrambot-config",
+        "botname": "bot",
+        "usernames": "",
+        "chatIds": "",
+        "pollInterval": "300"
+    }
+]
